@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import BASE_URL from "../api";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -7,9 +8,11 @@ export default function Login() {
   const navigate = useNavigate();
 
   const login = async () => {
-    const res = await fetch("http://localhost:5000/login", {
+    const res = await fetch(`${BASE_URL}/login`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({ email, password })
     });
 
@@ -24,30 +27,10 @@ export default function Login() {
   };
 
   return (
-    <div className="h-screen flex items-center justify-center bg-gray-900 text-white">
-      <div className="bg-gray-800 p-6 rounded-xl w-80">
-        <h1 className="text-2xl mb-4 text-center">Login 🚀</h1>
-
-        <input
-          className="w-full mb-3 p-2 rounded bg-gray-700"
-          placeholder="Email"
-          onChange={(e) => setEmail(e.target.value)}
-        />
-
-        <input
-          className="w-full mb-3 p-2 rounded bg-gray-700"
-          placeholder="Password"
-          type="password"
-          onChange={(e) => setPassword(e.target.value)}
-        />
-
-        <button
-          onClick={login}
-          className="w-full bg-blue-500 p-2 rounded hover:bg-blue-600"
-        >
-          Login
-        </button>
-      </div>
+    <div>
+      <input placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
+      <input placeholder="Password" type="password" onChange={(e) => setPassword(e.target.value)} />
+      <button onClick={login}>Login</button>
     </div>
   );
 }
