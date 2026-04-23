@@ -28,7 +28,7 @@ export default function CourseDetail() {
     })
       .then(res => res.json())
       .then(data => {
-        const found = data.find(item => item.course._id === id);
+      const found = data.find(item => item.course && item.course._id === id); 
         if (found) {
           setProgress(found.progress);
         }
