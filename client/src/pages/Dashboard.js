@@ -8,23 +8,25 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
-  // ✅ All courses (for enroll)
+  // ✅ All courses
   useEffect(() => {
     fetch(`${BASE_URL}/courses`)
       .then(res => res.json())
       .then(data => setAllCourses(data));
   }, []);
 
-  // ✅ Enrolled courses (with progress)
-  useEffect(() => {
-    fetch(`${BASE_URL}/dashboard`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
-      .then(res => res.json())
-      .then(data => setMyCourses(data));
-  }, []);
+  // ✅ My enrolled courses
+ useEffect(() => {
+  if (!token) return;
+
+  fetch(`${BASE_URL}/dashboard`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+    .then(res => res.json())
+    .then(data => setMyCourses(data));
+}, [token]);
 
   const logout = () => {
     localStorage.removeItem("token");
@@ -43,7 +45,7 @@ export default function Dashboard() {
 
     const data = await res.json();
     alert(data.message);
-    window.location.reload(); // refresh to show in enrolled
+    window.location.reload();
   };
 
   const deleteCourse = async (id) => {
@@ -104,26 +106,33 @@ export default function Dashboard() {
         ))}
       </div>
 
-      {/* 🔥 MY COURSES (ENROLLED ONLY) */}
+      {/* 🔥 MY COURSES */}
       <h2 className="text-2xl mb-4">My Courses 🎯</h2>
       <div className="grid md:grid-cols-3 gap-6">
-        {myCourses.map((item) => (
-          <div key={item.course._id} className="bg-gray-800 p-5 rounded-xl">
-            <h2>{item.course.title}</h2>
-            <p>{item.course.description}</p>
+        
+        {myCourses.map((item) => {
+          // ✅ EXTRA SAFE (important)
+          if (!item.course) return null;
 
-            <p className="text-green-400">
-              Progress: {item.progress}%
-            </p>
+          return (
+            <div key={item.course._id} className="bg-gray-800 p-5 rounded-xl">
+              <h2>{item.course?.title || "Course Deleted"}</h2>
+              <p>{item.course?.description || "No description"}</p>
 
-            <button
-              onClick={() => navigate(`/course/${item.course._id}`)}
-              className="mt-2 bg-blue-500 px-2 py-1 rounded"
-            >
-              Continue
-            </button>
-          </div>
-        ))}
+              <p className="text-green-400">
+                Progress: {item.progress}%
+              </p>
+
+              <button
+                onClick={() => navigate(`/course/${item.course._id}`)}
+                className="mt-2 bg-blue-500 px-2 py-1 rounded"
+              >
+                Continue
+              </button>
+            </div>
+          );
+        })}
+
       </div>
     </div>
   );
